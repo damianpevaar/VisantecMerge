@@ -1,0 +1,22 @@
+{
+  "navigationFallback": { "rewrite": "/index.html" },
+  "routes": [
+    { "route": "/dashboard/*", "allowedRoles": ["authenticated"] },
+    {
+      "route": "/api/*",
+      "allowedRoles": ["anonymous"],
+      "methods": ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
+      "rewrite": "https://api-tickets-app.bravemoss-14e76127.eastus2.azurecontainerapps.io/api/*"
+    },
+    {
+      "route": "/api/graphql",
+      "allowedRoles": ["anonymous"],
+      "methods": ["POST","OPTIONS"],
+      "rewrite": "https://api-tickets-app.bravemoss-14e76127.eastus2.azurecontainerapps.io/api/graphql"
+    }
+  ],
+  "globalHeaders": {
+    "X-Frame-Options": "DENY",
+    "X-Content-Type-Options": "nosniff"
+  }
+}
