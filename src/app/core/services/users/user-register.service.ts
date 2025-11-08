@@ -5,11 +5,8 @@ import { environment } from '../../../../environments/environment';
 import { IUser } from '../../domain/iuser';
 
 export interface RegisterUserInput {
-    userName: string;
     email: string;
-    roles: string[];
     password?: string;
-    isActive?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })

@@ -17,7 +17,8 @@ export class TicketReportService {
     watchSummary(filter: TicketReportFilter): QueryRef<TicketSummaryResponse> {
         return this._apollo.watchQuery<TicketSummaryResponse>({
             query: TICKET_SUMMARY_QUERY,
-            variables: { filter: this.stripNulls(filter) }
+            variables: { filter: this.stripNulls(filter) },
+            fetchPolicy: 'cache-and-network'
         });
     }
 

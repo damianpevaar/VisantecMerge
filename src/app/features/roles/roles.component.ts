@@ -1,12 +1,12 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormArray, FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { RolesService } from '../../core/services/roles-service';
+import { RolesService } from '../../core/services/roles/roles-service';
 import { TicketGraphqlService } from '../../core/services/ticket-graphql.service';
 import { AngularMaterialModule } from '../../shared/modules/angular-material/angular-material-module';
 import { Subject, takeUntil, forkJoin, take } from 'rxjs';
-import { ClientRolesService, CreateClientRoleRequest } from '../../core/services/client-roles.service';
+import { ClientRolesService, CreateClientRoleRequest, ClientRoleResponse } from '../../core/services/client-roles.service';
 import { RoleItem } from '../../core/domain/irole';
 import { ClientOrganization } from '../../core/domain/tickets/client-organization';
 
@@ -23,8 +23,7 @@ export class RolesComponent implements OnInit, OnDestroy {
   clients: ClientOrganization[] = [];
   filteredClients: ClientOrganization[] = [];
   selectedRole: RoleItem | null = null;
-
-  rolesList: any[] = []; // 👈 lista para el dropdown de roles base
+  rolesList: any[] = []; 
   form: FormGroup;
   clientSearch = new FormControl('');
   private destroy$ = new Subject<void>();
@@ -34,7 +33,8 @@ export class RolesComponent implements OnInit, OnDestroy {
     private _rolesService: RolesService,
     private _ticketGraphql: TicketGraphqlService,
     private _snackBar: MatSnackBar,
-    private _clientRoles: ClientRolesService
+    private _clientRoles: ClientRolesService,
+    private cdRef: ChangeDetectorRef
   ) {
     this.form = this.fb.group({
       roleName: ['', Validators.required],
@@ -67,38 +67,38 @@ export class RolesComponent implements OnInit, OnDestroy {
             contactEmail: n.contactEmail,
             contactPhone: n.contactPhone
           }));
+          this.filteredClients = [...this.clients];
 
-          // Cargar también roles de cliente desde el backend
-          const clientRolesCalls = this.clients.map(c =>
-            this._clientRoles.getRolesByClient(c.id).pipe(take(1))
-          );
+          // Cargar roles de cliente desde backend (un único llamado GraphQL)
+          this._rolesService.getClientRoles(100).pipe(take(1)).subscribe({
+            next: (clientRolesNodes: any[]) => {
+              const grouped: Record<string, any> = {};
 
-          if (clientRolesCalls.length === 0) {
-            this.roles = baseRoles;
-            this.rolesList = [...baseRoles];
-            this.loading = false;
-            return;
-          }
+              (clientRolesNodes || []).forEach(r => {
+                if (!grouped[r.id]) {
+                  grouped[r.id] = {
+                    id: r.id,
+                    name: r.name,
+                    isClientRole: true,
+                    baseRoleId: r.baseRoleId,
+                    baseRoleName: r.baseRoleName,
+                    clients: []
+                  };
+                }
 
-          forkJoin(clientRolesCalls).subscribe({
-            next: (clientRolesResults: any[][]) => {
-              const clientRoles = clientRolesResults.flat().map(r => ({
-                id: r.id,
-                name: r.name,
-                isClientRole: true,
-                clients: [
-                  {
-                    id: r.clientOrganizationId,
-                    name:
-                      this.clients.find(c => c.id === r.clientOrganizationId)?.name ??
-                      '(sin nombre)'
-                  }
-                ]
-              }));
+                if (Array.isArray(r.clients)) {
+                  r.clients.forEach((c: { id: string; name: string }) => {
+                    const exists = grouped[r.id].clients.some((x: any) => x.id === c.id);
+                    if (!exists) {
+                      grouped[r.id].clients.push({ id: c.id, name: c.name });
+                    }
+                  });
+                }
+              });
 
-              // Combinar roles base + client roles
-              this.roles = [...baseRoles, ...clientRoles];
-              this.rolesList = [...baseRoles]; // dropdown solo roles base
+              const clientRoles = Object.values(grouped);
+              this.roles = [...clientRoles];
+              this.rolesList = [...baseRoles];
             },
             error: (err) => {
               console.error('Error fetching client roles', err);
@@ -110,6 +110,7 @@ export class RolesComponent implements OnInit, OnDestroy {
         error: () => (this.loading = false)
       });
 
+    // Filtro de búsqueda de clientes
     this.clientSearch.valueChanges
       .pipe(takeUntil(this.destroy$))
       .subscribe(term => {
@@ -119,7 +120,6 @@ export class RolesComponent implements OnInit, OnDestroy {
         );
       });
   }
-
 
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -132,26 +132,49 @@ export class RolesComponent implements OnInit, OnDestroy {
 
   toggleClientSelection(clientId: string): void {
     const arr = this.clientsArray;
-    const index = arr.value.indexOf(clientId);
-    if (index === -1) arr.push(this.fb.control(clientId));
-    else arr.removeAt(index);
+    const index = arr.value.findIndex((id: string) => id?.toLowerCase() === clientId?.toLowerCase());
+    if (index === -1) {
+      arr.push(this.fb.control(clientId));
+    } else {
+      arr.removeAt(index);
+    }
   }
 
   isClientSelected(clientId: string): boolean {
-    return this.clientsArray.value.includes(clientId);
+    return this.clientsArray.value.some((id: string) =>
+      (id ?? '').toString().toLowerCase() === (clientId ?? '').toString().toLowerCase()
+    );
   }
 
   selectRole(role: RoleItem): void {
+    console.log('Seleccionado:', role);
     this.selectedRole = role;
+
+    this.clientsArray.clear();
+    (role.clients ?? []).forEach(c => this.clientsArray.push(this.fb.control(c.id)));
+
     this.form.patchValue({
       roleName: role.name,
-      // try to map existing role to a base role id if names match
-      baseRole: this.rolesList.find(r => r.name === role.name)?.id || ''
+      baseRole: (() => {
+        const bid = (role as any).baseRoleId;
+        if (!bid) return '';
+        const found = this.rolesList.find(r => (r.id ?? '').toString().toLowerCase() === bid.toString().toLowerCase());
+        return found ? found.id : bid;
+      })()
+    });
+
+    this.form.updateValueAndValidity();
+    this.cdRef.detectChanges(); // asegura refresco visual
+  }
+
+  startCreate(): void {
+    this.selectedRole = null;
+    this.form.reset({
+      roleName: '',
+      baseRole: '',
+      clients: []
     });
     this.clientsArray.clear();
-
-    const clients = role.clients ?? [];
-    clients.forEach(c => this.clientsArray.push(this.fb.control(c.id)));
   }
 
   createRole(): void {
@@ -167,54 +190,128 @@ export class RolesComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // call backend for each selected client and add created roles to UI
-    const calls = selectedClients.map((clientId: string) => {
-      const baseRoleId = values.baseRole || null;
-      const baseRoleName = baseRoleId ? (this.rolesList.find(r => r.id === baseRoleId)?.name ?? null) : null;
-      const payload: CreateClientRoleRequest = {
-        clientOrganizationId: clientId,
-        name: values.roleName,
-        RoleId: baseRoleId ?? null,
-        baseRoleName: baseRoleName ?? null,
-        description: null
-      };
-      return this._clientRoles.createClientRole(payload);
-    });
+    const baseRoleId = values.baseRole || null;
+    const baseRoleName = baseRoleId
+      ? (this.rolesList.find(r => r.id === baseRoleId)?.name ?? null)
+      : null;
 
-    // indicate saving state on the form
+    const payload: CreateClientRoleRequest = {
+      clientOrganizationIds: selectedClients,
+      name: values.roleName,
+      baseRoleId,
+      baseRoleName,
+      description: null
+    };
+
     this.form.disable();
 
-    forkJoin(calls).pipe(take(1)).subscribe({
-      next: (results: any[]) => {
-        // results may be one or many created ClientRoleResponse objects
-        results.forEach(res => {
-          const added: RoleItem = { id: res.id ?? res.id?.toString(), name: res.name, clients: [{ id: res.clientOrganizationId ?? res.clientOrganizationId?.toString(), name: this.clients.find(c => c.id === (res.clientOrganizationId ?? res.clientOrganizationId?.toString()))?.name ?? '' }] };
-          this.roles = [added, ...this.roles];
-        });
-        this._snackBar.open('Rol(es) creado(s) correctamente', 'Cerrar', { duration: 3000 });
-        // select the first created role
-        if (results.length) {
-          const first = results[0];
-          this.selectRole({ id: first.id ?? first.id?.toString(), name: first.name, clients: [{ id: first.clientOrganizationId ?? first.clientOrganizationId?.toString(), name: this.clients.find(c => c.id === (first.clientOrganizationId ?? first.clientOrganizationId?.toString()))?.name ?? '' }] });
-        }
+    this._clientRoles.createClientRole(payload).pipe(take(1)).subscribe({
+      next: (res: ClientRoleResponse) => {
+        const added: RoleItem = {
+          id: res.id,
+          name: res.name,
+          isClientRole: true,
+          baseRoleId: res.baseRoleId,
+          baseRoleName: res.baseRoleName,
+          clients: res.clients.map(c => ({
+            id: c.id,
+            name: c.name
+          }))
+        };
+
+        this.roles = [added, ...this.roles];
+        this._snackBar.open('Rol creado correctamente', 'Cerrar', { duration: 3000 });
       },
       error: (err) => {
-        console.error('Error creating client role(s)', err);
-        this._snackBar.open('Error creando rol(es): ' + (err?.message ?? ''), 'Cerrar', { duration: 5000 });
+        console.error('Error creating client role', err);
+        this._snackBar.open('Error creando rol: ' + (err?.message ?? ''), 'Cerrar', { duration: 5000 });
       },
-      complete: () => {
-        this.form.enable();
-      }
+      complete: () => this.form.enable()
+    });
+  }
+
+  updateRole(): void {
+    if (!this.selectedRole) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const values = this.form.value;
+    const selectedClients: string[] = values.clients || [];
+
+    if (!selectedClients.length) {
+      this._snackBar.open('Selecciona al menos un cliente.', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    const baseRoleId = values.baseRole || null;
+    const baseRoleName = baseRoleId
+      ? (this.rolesList.find(r => r.id === baseRoleId)?.name ?? null)
+      : null;
+
+    const payload: CreateClientRoleRequest = {
+      clientOrganizationIds: selectedClients,
+      name: values.roleName,
+      baseRoleId,
+      baseRoleName,
+      description: null
+    };
+
+    this.form.disable();
+
+    this._clientRoles.updateClientRole(this.selectedRole.id, payload).pipe(take(1)).subscribe({
+      next: (res) => {
+        // actualiza localmente la lista de roles
+        const idx = this.roles.findIndex(r => r.id === this.selectedRole?.id);
+        if (idx !== -1) {
+          this.roles[idx] = {
+            ...this.roles[idx],
+            name: res.name,
+            baseRoleId: res.baseRoleId,
+            baseRoleName: res.baseRoleName,
+            clients: res.clients
+          };
+        }
+
+        this.selectedRole = { ...this.selectedRole, ...res };
+        this._snackBar.open('Rol actualizado correctamente', 'Cerrar', { duration: 3000 });
+      },
+      error: (err) => {
+        console.error('Error actualizando rol', err);
+        this._snackBar.open('Error actualizando el rol', 'Cerrar', { duration: 4000 });
+      },
+      complete: () => this.form.enable()
     });
   }
 
   deleteRole(role: RoleItem): void {
-    this.roles = this.roles.filter(r => r.id !== role.id);
-    if (this.selectedRole?.id === role.id) {
-      this.selectedRole = null;
-      this.form.reset();
-      this.clientsArray.clear();
+    if (!role || !role.id) {
+      this._snackBar.open('No se puede eliminar el rol: ID inválido', 'Cerrar', { duration: 3000 });
+      return;
     }
-    this._snackBar.open('Rol eliminado (simulado)', 'Cerrar', { duration: 3000 });
+
+    const confirmDelete = confirm(`¿Seguro que deseas eliminar el rol "${role.name}"?`);
+    if (!confirmDelete) return;
+
+    this._clientRoles.deleteClientRole(role.id).pipe(take(1)).subscribe({
+      next: () => {
+        // elimina localmente el rol de la lista
+        this.roles = this.roles.filter(r => r.id !== role.id);
+
+        // limpia el formulario si el rol eliminado estaba seleccionado
+        if (this.selectedRole?.id === role.id) {
+          this.selectedRole = null;
+          this.form.reset();
+          this.clientsArray.clear();
+        }
+
+        this._snackBar.open('Rol eliminado correctamente', 'Cerrar', { duration: 3000 });
+      },
+      error: (err) => {
+        console.error('Error eliminando rol:', err);
+        this._snackBar.open('Error eliminando el rol', 'Cerrar', { duration: 4000 });
+      }
+    });
   }
 }

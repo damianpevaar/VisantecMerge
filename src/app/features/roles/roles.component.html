@@ -2,12 +2,12 @@
   <aside class="role-list">
     <header>
       <h2>Roles</h2>
-      <button mat-stroked-button color="primary" type="button" (click)="createRole()">Nuevo rol</button>
+      <button mat-stroked-button color="primary" type="button" (click)="startCreate()">Nuevo rol</button>
     </header>
 
     <div class="list">
       <button
-        type="button"
+        type="button" 
         *ngFor="let role of roles"
         (click)="selectRole(role)"
         [class.active]="role.id === selectedRole?.id">
@@ -80,16 +80,33 @@
       </div>
 
       <div class="actions">
-        <button mat-flat-button color="primary" type="button" (click)="createRole()" [disabled]="form.invalid">
-          Guardar rol (simulado)
+        <button
+          mat-flat-button
+          color="primary"
+          type="button"
+          *ngIf="!selectedRole"
+          (click)="createRole()"
+          [disabled]="form.invalid">
+          Guardar rol
         </button>
+
+        <button
+          mat-flat-button
+          color="accent"
+          type="button"
+          *ngIf="selectedRole"
+          (click)="updateRole()"
+          [disabled]="form.invalid">
+          Actualizar rol
+        </button>
+
         <button
           mat-stroked-button
           color="warn"
           *ngIf="selectedRole"
           type="button"
           (click)="deleteRole(selectedRole)">
-          Eliminar (simulado)
+          Eliminar
         </button>
       </div>
     </form>

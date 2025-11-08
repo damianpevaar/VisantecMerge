@@ -35,9 +35,10 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
     });
 
     private readonly destroy$ = new Subject<void>();
+    private organizationsQuery = this._ticketGraphql.watchClientOrganizations(100);
 
     ngOnInit(): void {
-        this._ticketGraphql.watchClientOrganizations(100)
+        this.organizationsQuery
             .valueChanges
             .pipe(takeUntil(this.destroy$))
             .subscribe(({ data, loading }) => {
@@ -106,6 +107,7 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
                 next: organization => {
                     this._snackBar.open('Organizacion guardada', 'Cerrar', { duration: 3000 });
                     this.selectOrganization(organization);
+                    this.organizationsQuery.refetch();
                 },
                 error: () => this._snackBar.open('No se pudo guardar la organizacion', 'Cerrar', { duration: 4000 })
             })

@@ -3,7 +3,7 @@
   <mat-form-field appearance="outline">
     <mat-label>Asunto</mat-label>
     <input matInput formControlName="subject" maxlength="120">
-    <mat-error *ngIf="form.controls.subject.invalid">Ingresa un asunto v�lido.</mat-error>
+    <mat-error *ngIf="form.controls.subject.invalid">Ingresa un asunto válido.</mat-error>
   </mat-form-field>
 
   <mat-form-field appearance="outline" class="full">
@@ -25,7 +25,7 @@
     <mat-form-field appearance="outline">
       <mat-label>Cliente</mat-label>
       <mat-select formControlName="clientOrganizationId">
-        <mat-option [value]="null">Sin asociaci�n</mat-option>
+        <mat-option [value]="null">Sin asociación</mat-option>
         <mat-option *ngFor="let org of data.organizations" [value]="org.id">
           {{ org.name }}
         </mat-option>
@@ -37,7 +37,7 @@
     <mat-form-field appearance="outline">
       <mat-label>Correo del solicitante</mat-label>
       <input matInput formControlName="requestedByEmail">
-      <mat-error *ngIf="form.controls.requestedByEmail.invalid">Ingresa un correo v�lido.</mat-error>
+      <mat-error *ngIf="form.controls.requestedByEmail.invalid">Ingresa un correo válido.</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
@@ -52,7 +52,7 @@
       <span class="material-symbols-rounded">attach_file_add</span>
       Adjuntar archivos
     </label>
-    <span *ngIf="isUploading" class="uploading">Procesando archivos�</span>
+    <span *ngIf="isUploading" class="uploading">Procesando archivos...</span>
   </section>
 
   <ul class="attachment-list" *ngIf="attachments.length">

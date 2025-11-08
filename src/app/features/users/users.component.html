@@ -38,7 +38,13 @@
     </header>
 
     <form [formGroup]="form" (ngSubmit)="save()" class="detail-form">
+<<<<<<< HEAD
       <mat-form-field appearance="outline">
+=======
+      <mat-form-field
+        appearance="outline"
+        *ngIf="selectedUser">
+>>>>>>> develop
         <mat-label>Nombre</mat-label>
         <input matInput formControlName="userName" />
       </mat-form-field>
@@ -70,23 +76,42 @@
 
         <div class="pwd-hint" role="status">
           <div class="pwd-checklist">
+<<<<<<< HEAD
             <div [class.ok]="pwdMinLen">Mínimo 8 caracteres</div>
             <div [class.ok]="pwdHasUpper">Una mayúscula</div>
             <div [class.ok]="pwdHasLower">Una minúscula</div>
             <div [class.ok]="pwdHasNumber">Un número</div>
             <div [class.ok]="pwdHasSymbol">Un símbolo</div>
+=======
+            <div [class.ok]="pwdCriteria.minLen">Mínimo 8 caracteres</div>
+            <div [class.ok]="pwdCriteria.hasUpper">Una mayúscula</div>
+            <div [class.ok]="pwdCriteria.hasLower">Una minúscula</div>
+            <div [class.ok]="pwdCriteria.hasNumber">Un número</div>
+            <div [class.ok]="pwdCriteria.hasSymbol">Un símbolo</div>
+>>>>>>> develop
           </div>
         </div>
       </div>
 
+<<<<<<< HEAD
       <mat-form-field appearance="outline">
         <mat-label>Rol</mat-label>
         <mat-select formControlName="role">
           <mat-option *ngFor="let r of rolesList" [value]="r.name">{{ r.name }}</mat-option>
+=======
+      <mat-form-field appearance="outline" *ngIf="selectedUser">
+        <mat-label>Rol</mat-label>
+        <mat-select formControlName="role">
+          <mat-option *ngFor="let r of rolesList" [value]="r.id">{{ r.name }}</mat-option>
+>>>>>>> develop
         </mat-select>
       </mat-form-field>
 
       <mat-slide-toggle
+<<<<<<< HEAD
+=======
+        *ngIf="selectedUser"
+>>>>>>> develop
         color="primary"
         [checked]="form.get('isActive')?.value"
         (change)="onStatusToggle($event.checked)">

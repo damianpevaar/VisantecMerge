@@ -3,8 +3,17 @@ export interface IRole {
     name: string;
 }
 
+export interface ClientSummary {
+  id: string;
+  name: string;
+}
+
 export interface RoleItem {
   id: string;
   name: string;
-  clients?: Array<{ id: string; name: string }>;
+  baseRoleId?: string | null;
+  baseRoleName?: string | null;
+  description?: string | null;
+  clients?: ClientSummary[];
+  isClientRole?: boolean;
 }

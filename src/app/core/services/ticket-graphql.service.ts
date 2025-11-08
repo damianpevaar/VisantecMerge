@@ -77,13 +77,15 @@ export class TicketGraphqlService {
     watchClientOrganizations(first: number = 100): QueryRef<ClientOrganizationsResponse> {
         return this._apollo.watchQuery<ClientOrganizationsResponse>({
             query: CLIENT_ORGANIZATIONS_QUERY,
-            variables: { first, after: null, where: {} }
+            variables: { first, after: null, where: {} },
+            fetchPolicy: 'cache-and-network'
         });
     }
 
     watchManagedMailboxes(): QueryRef<ManagedMailboxesResponse> {
         return this._apollo.watchQuery<ManagedMailboxesResponse>({
-            query: MANAGED_MAILBOXES_QUERY
+            query: MANAGED_MAILBOXES_QUERY,
+            fetchPolicy: 'cache-and-network'
         });
     }
 

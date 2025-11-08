@@ -4,20 +4,25 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface CreateClientRoleRequest {
-  clientOrganizationId: string;
+  clientOrganizationIds: string[];
   name: string;
-  RoleId?: string | null;
+  baseRoleId?: string | null;
   baseRoleName?: string | null;
   description?: string | null;
 }
 
+export interface ClientOrganizationSummary {
+  id: string;
+  name: string;
+}
+
 export interface ClientRoleResponse {
   id: string;
-  clientOrganizationId: string;
   name: string;
-  RoleId?: string | null;
+  baseRoleId?: string | null;
   baseRoleName?: string | null;
   description?: string | null;
+  clients: ClientOrganizationSummary[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -31,21 +36,21 @@ export class ClientRolesService {
   createClientRole(request: CreateClientRoleRequest): Observable<ClientRoleResponse> {
     const url = `${this.baseUrl}/create`;
     return this.http.post<ClientRoleResponse>(url, {
-      clientOrganizationId: request.clientOrganizationId,
+      clientOrganizationIds: request.clientOrganizationIds,
       name: request.name,
-      RoleId: request.RoleId ?? null,
+      baseRoleId: request.baseRoleId ?? null,
       baseRoleName: request.baseRoleName ?? null,
       description: request.description ?? null
     });
   }
 
-  // GET /ClientRoles/{clientId}
-  getRolesByClient(clientId: string): Observable<ClientRoleResponse[]> {
-    const url = `${this.baseUrl}/${clientId}`;
-    return this.http.get<ClientRoleResponse[]>(url);
+  // PUT /ClientRoles/{roleId}
+  updateClientRole(roleId: string, request: CreateClientRoleRequest): Observable<ClientRoleResponse> {
+    const url = `${this.baseUrl}/${roleId}`;
+    return this.http.put<ClientRoleResponse>(url, request);
   }
 
-  // (opcional) endpoint para borrar si lo implementas en backend
+  // DELETE /ClientRoles/{roleId}
   deleteClientRole(roleId: string): Observable<void> {
     const url = `${this.baseUrl}/${roleId}`;
     return this.http.delete<void>(url);

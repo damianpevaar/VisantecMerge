@@ -5,6 +5,8 @@
 }
 
 .organization-list {
+  position: relative;
+  z-index: 0;
   background: #fff;
   padding: 1.25rem;
   border-radius: 12px;
@@ -49,6 +51,9 @@
       .name {
         font-weight: 600;
         color: #0f172a;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .meta {
@@ -56,8 +61,15 @@
         justify-content: space-between;
         font-size: 0.85rem;
         color: #64748b;
+        span {
+          display: block;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
 
         .status {
+          flex-shrink: 0;
           font-weight: 600;
           color: #059669;
 
@@ -97,6 +109,8 @@
     }
 
     .actions {
+      position: relative;
+      z-index: 0;
       grid-column: 1 / -1;
       display: flex;
       justify-content: flex-end;

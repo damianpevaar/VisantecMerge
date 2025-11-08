@@ -25,10 +25,4 @@ export class UsersService {
     const url = `${environment.ApiUrl}/UserManagement/Update/${id}`;
     return this._http.put<any>(url, input);
   }
-
-  // Update only the status (isActive) of a user
-  updateStatus(userId: string, isActive: boolean) {
-    const url = `${environment.ApiUrl}/UserStatusManagement/UpdateUserStatus/${userId}`;
-    return this._http.put<any>(url, { isActive });
-  }
 }
