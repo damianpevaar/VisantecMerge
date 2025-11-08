@@ -1,0 +1,51 @@
+<header>
+  <div class="left-content">
+    <button mat-icon-button (click)="toggleSidebar()">
+      <span class="material-symbols-rounded">menu</span>
+    </button>
+    <img class="logo" src="resources/logo_pevaar_strip.png" alt="">
+    <div class="workspace-name">Gestor de tickets de facturacion</div>
+  </div>
+
+  <div class="right-content">
+    <div class="user-menu-container" *ngIf="currentUser">
+      <button mat-icon-button [matTooltip]="'Menu de usuario'" (click)="toggleUserMenu()" class="user-menu-button" [class.active]="isUserMenuOpen">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+
+      <div class="user-menu-backdrop" *ngIf="isUserMenuOpen" (click)="closeUserMenu()"></div>
+
+      <div class="user-menu" *ngIf="isUserMenuOpen" (click)="$event.stopPropagation()">
+        <div class="user-menu-header">
+          <div class="user-avatar">
+            <mat-icon>person</mat-icon>
+          </div>
+          <div class="user-info">
+            <div class="user-name">{{ currentUser.userName }}</div>
+            <div class="user-email" *ngIf="currentUser.email">{{ currentUser.email }}</div>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="user-roles" *ngIf="currentUser.roles && currentUser.roles.length">
+          <div class="roles-header">Roles</div>
+          <div class="roles-list">
+            <div class="role-item" *ngFor="let role of currentUser.roles">
+              <mat-icon>badge</mat-icon>
+              <span>{{ role }}</span>
+            </div>
+          </div>
+          <mat-divider></mat-divider>
+        </div>
+
+        <div class="user-menu-actions">
+          <button mat-menu-item (click)="logout()" class="logout-button">
+            <mat-icon>logout</mat-icon>
+            <span>Cerrar sesion</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

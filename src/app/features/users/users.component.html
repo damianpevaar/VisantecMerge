@@ -1,0 +1,117 @@
+<section class="users" *ngIf="!loading; else loadingState">
+  <aside class="user-list">
+    <header>
+      <h2>Usuarios</h2>
+      <button
+        mat-stroked-button
+        color="primary"
+        type="button"
+        (click)="startCreate()">
+        Nuevo usuario
+      </button>
+    </header>
+
+    <div class="list">
+      <button
+        type="button"
+        *ngFor="let user of users"
+        (click)="selectUser(user)"
+        [class.active]="user.id === selectedUser?.id">
+        <div class="name">{{ user.userName }}</div>
+        <div class="meta">
+          <span>{{ user.email || 'Sin correo' }}</span>
+          <span
+            class="status"
+            [class.inactive]="!(user.status?.isActive ?? user.isActive)">
+            {{ (user.status?.isActive ?? user.isActive) ? 'Activo' : 'Inactivo' }}
+          </span>
+        </div>
+      </button>
+    </div>
+  </aside>
+
+  <section class="user-detail">
+    <header>
+      <h2>{{ selectedUser ? 'Actualizar usuario' : 'Registrar usuario' }}</h2>
+      <p *ngIf="selectedUser">ID: {{ selectedUser.id }}</p>
+      <p *ngIf="selectedUser">Nombre: {{ selectedUser.userName }}</p>
+    </header>
+
+    <form [formGroup]="form" (ngSubmit)="save()" class="detail-form">
+      <mat-form-field
+        appearance="outline"
+        *ngIf="selectedUser">
+        <mat-label>Nombre</mat-label>
+        <input matInput formControlName="userName" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Correo</mat-label>
+        <input matInput formControlName="email" />
+      </mat-form-field>
+
+      <div *ngIf="!selectedUser" class="password-wrapper">
+        <mat-form-field appearance="outline" class="password-field">
+          <mat-label>Contraseña</mat-label>
+          <input
+            matInput
+            [type]="passwordVisible ? 'text' : 'password'"
+            formControlName="password" />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="passwordVisible = !passwordVisible"
+            [attr.aria-label]="passwordVisible ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+            <mat-icon>{{ passwordVisible ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="form.controls['password'].invalid && form.controls['password'].touched">
+            La contraseña no cumple los requisitos.
+          </mat-error>
+        </mat-form-field>
+
+        <div class="pwd-hint" role="status">
+          <div class="pwd-checklist">
+            <div [class.ok]="pwdCriteria.minLen">Mínimo 8 caracteres</div>
+            <div [class.ok]="pwdCriteria.hasUpper">Una mayúscula</div>
+            <div [class.ok]="pwdCriteria.hasLower">Una minúscula</div>
+            <div [class.ok]="pwdCriteria.hasNumber">Un número</div>
+            <div [class.ok]="pwdCriteria.hasSymbol">Un símbolo</div>
+          </div>
+        </div>
+      </div>
+
+      <mat-form-field appearance="outline" *ngIf="selectedUser">
+        <mat-label>Rol</mat-label>
+        <mat-select formControlName="role">
+          <mat-option *ngFor="let r of rolesList" [value]="r.id">{{ r.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-slide-toggle
+        *ngIf="selectedUser"
+        color="primary"
+        [checked]="form.get('isActive')?.value"
+        (change)="onStatusToggle($event.checked)">
+        Usuario activo
+      </mat-slide-toggle>
+
+      <div class="actions">
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          [disabled]="form.invalid || saving">
+          Guardar usuario
+        </button>
+      </div>
+    </form>
+  </section>
+</section>
+
+<ng-template #loadingState>
+  <div class="loading">
+    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    <p>Cargando usuarios</p>
+  </div>
+</ng-template>

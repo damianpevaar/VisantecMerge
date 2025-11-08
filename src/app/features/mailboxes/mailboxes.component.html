@@ -1,0 +1,65 @@
+<section class="mailboxes" *ngIf="!loading; else loadingState">
+  <aside class="mailbox-list">
+    <h2>Buzones administrados</h2>
+    <div class="list">
+      <button type="button"
+              *ngFor="let mailbox of mailboxes"
+              (click)="selectMailbox(mailbox)"
+              [class.active]="mailbox.id === selectedMailbox?.id">
+        <div class="address">{{ mailbox.address }}</div>
+        <div class="details">
+          <span>{{ mailbox.displayName || 'Sin nombre' }}</span>
+          <span class="status" [class.inactive]="!mailbox.isActive">
+            {{ mailbox.isActive ? 'Activo' : 'Inactivo' }}
+          </span>
+        </div>
+      </button>
+    </div>
+  </aside>
+
+  <section class="mailbox-detail" *ngIf="selectedMailbox; else emptyState">
+    <header>
+      <h2>{{ selectedMailbox.address }}</h2>
+      <p>Configura la respuesta automática y descripción del buzón.</p>
+    </header>
+
+    <form [formGroup]="form" (ngSubmit)="save()" class="detail-form">
+      <mat-form-field appearance="outline">
+        <mat-label>Nombre para mostrar</mat-label>
+        <input matInput formControlName="displayName">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Descripción</mat-label>
+        <textarea matInput rows="2" formControlName="description"></textarea>
+      </mat-form-field>
+
+      <mat-slide-toggle formControlName="isActive">Buzón activo</mat-slide-toggle>
+      <mat-slide-toggle formControlName="autoResponseEnabled">Enviar respuesta automática</mat-slide-toggle>
+
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Plantilla de respuesta automática</mat-label>
+        <textarea matInput rows="5" formControlName="autoResponseTemplate"></textarea>
+      </mat-form-field>
+
+      <div class="actions">
+        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || saving">
+          Guardar cambios
+        </button>
+      </div>
+    </form>
+  </section>
+</section>
+
+<ng-template #emptyState>
+  <div class="empty">
+    <p>Selecciona un buzón para editar su configuración.</p>
+  </div>
+</ng-template>
+
+<ng-template #loadingState>
+  <div class="loading">
+    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    <p>Cargando buzones...</p>
+  </div>
+</ng-template>

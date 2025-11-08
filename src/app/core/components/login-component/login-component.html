@@ -1,0 +1,29 @@
+<div class="main-container">
+    @if (isLoading) { <mat-spinner></mat-spinner> }
+    @else {
+    <h1>Iniciar sesión</h1>
+
+    <form class="form-container"
+        [formGroup]="loginForm"
+        (ngSubmit)="login()">
+        <mat-form-field appearance="outline">
+            <mat-label>Usuario</mat-label>
+            <input matInput
+                placeholder="Introduce tu usuario"
+                formControlName="email">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Contraseña</mat-label>
+            <input matInput type="password"
+                placeholder="Introduce tu contraseña"
+                formControlName="password">
+        </mat-form-field>
+
+        <button matButton="filled"
+            [disabled]="!loginForm.valid">Ingresar</button>
+    </form>
+
+    @if (showError) {<p class="error">Ha ocurrido un error, intente nuevamente</p>}
+    }
+</div>

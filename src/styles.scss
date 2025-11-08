@@ -1,0 +1,145 @@
+// Include theming for Angular Material with `mat.theme()`.
+// This Sass mixin will define CSS variables that are used for styling Angular Material
+// components according to the Material 3 design spec.
+// Learn more about theming and how to use it for your application's
+// custom components at https://material.angular.dev/guide/theming
+@use '@angular/material' as mat;
+
+html {
+  @include mat.theme((color: (primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      // typography: Roboto,
+      // density: 0,
+    ));
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+:root {
+  // --app-background-color: #F9F9F9;
+
+  // --app-primary-color: #0A1D4A;
+  // --app-secondary-color: #202F5B;
+  // --app-accent-color: #1151D3;
+  // --app-font-primary-color: #FFFFFF;
+
+  // --app-sidebar-background: #edf2fd;
+  // --app-sidebar-font-primary-color: #FFFFFF;
+
+  --app-background-color: #F9F9F9;
+
+  --app-primary-color: #0A1D4A;
+  --app-secondary-color: #0E3C77;
+  --app-accent-color: #1151D3;
+  --app-font-primary-color: #FFFFFF;
+
+  --app-sidebar-background: #FFFFFF;
+  --app-card-background: #FFFFFF;
+
+  @include mat.paginator-overrides((container-text-size: 14px));
+}
+
+body {
+  // Default the application to a light color theme. This can be changed to
+  // `dark` to enable the dark color theme, or to `light dark` to defer to the
+  // user's system settings.
+  color-scheme: light;
+
+  // Set a default background, font and text colors for the application using
+  // Angular Material's system-level CSS variables. Learn more about these
+  // variables at https://material.angular.dev/guide/system-variables
+  // background-color: var(--mat-sys-surface);
+  // color: var(--mat-sys-on-surface);
+  // font: var(--mat-sys-body-medium);
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+
+  // Reset the user agent margin.
+  margin: 0;
+
+  // font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: "Poppins", sans-serif !important;
+
+  background-color: var(--app-background-color);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0px;
+  padding: 0px;
+}
+
+h1 {
+  color: var(--app-secondary-color);
+  margin-bottom: 20px;
+}
+
+.material-symbols-rounded {
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.no-bottom-align {
+  .mat-mdc-form-field-bottom-align::before {
+    content: none !important;
+  }
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.card {
+  padding: 20px;
+  border-radius: 15px;
+  background-color: var(--app-card-background);
+}
+
+.shadow {
+  box-shadow: 0px 0px 20px -1px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 0px 0px 20px -1px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0px 0px 20px -1px rgba(0, 0, 0, 0.1);
+}
+
+.overflow-auto {
+  overflow: auto;
+}
+
+.custom-fab {
+  @include mat.fab-overrides((container-shape: 5px));
+  box-shadow: none !important;
+}
+
+div[mat-dialog-content] {
+  padding-top: 10px !important;
+}
+
+h2[mat-dialog-title] {
+  font-size: 20px !important;
+  font-weight: 500 !important;
+}

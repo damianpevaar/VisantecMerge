@@ -1,0 +1,37 @@
+<form [formGroup]="form" (ngSubmit)="submit()" class="reply-form">
+  <mat-form-field appearance="outline" class="full">
+    <mat-label>Escribe tu respuesta</mat-label>
+    <textarea matInput rows="4" formControlName="message" placeholder="Detalla la respuesta para el cliente"></textarea>
+    <mat-error *ngIf="form.controls.message.hasError('required')">El mensaje es obligatorio.</mat-error>
+    <mat-error *ngIf="form.controls.message.hasError('minlength')">Debe contener al menos 3 caracteres.</mat-error>
+  </mat-form-field>
+
+  <div class="toolbar">
+    <mat-slide-toggle formControlName="isInternal">Marcar como nota interna</mat-slide-toggle>
+
+    <div class="attachments">
+      <label class="upload" [class.disabled]="disabled || isUploading">
+        <input type="file" multiple (change)="handleFileChange($event)" [disabled]="disabled || isUploading">
+        <span class="material-symbols-rounded">attach_file_add</span>
+        Adjuntar archivos
+      </label>
+      <span *ngIf="isUploading" class="uploading">Subiendo adjuntos...</span>
+    </div>
+  </div>
+
+  <ul class="attachment-list" *ngIf="attachments.length">
+    <li *ngFor="let attachment of attachments; let i = index">
+      <span class="material-symbols-rounded">description</span>
+      <span class="name">{{ attachment.fileName }}</span>
+      <button mat-icon-button type="button" (click)="removeAttachment(i)">
+        <span class="material-symbols-rounded">close</span>
+      </button>
+    </li>
+  </ul>
+
+  <div class="actions">
+    <button mat-stroked-button color="primary" type="submit" [disabled]="disabled || form.invalid || isUploading">
+      Enviar respuesta
+    </button>
+  </div>
+</form>
