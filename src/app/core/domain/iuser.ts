@@ -6,7 +6,6 @@ export interface IUser {
     roles: string[];
     isActive: boolean;
     status?: {
-        userId: string;
         isActive: boolean;
         lastUpdated?: string | null;
     };

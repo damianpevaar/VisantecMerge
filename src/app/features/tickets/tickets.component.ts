@@ -282,10 +282,6 @@ export class TicketsComponent implements OnInit, OnDestroy {
                 }
             });
     }
-<<<<<<< HEAD
-=======
-    
->>>>>>> develop
     private refreshTickets(): void {
         const query = this.ticketsQuery;
         if (!query) {
