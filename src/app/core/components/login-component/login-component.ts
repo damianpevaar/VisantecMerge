@@ -17,11 +17,15 @@ export class LoginComponent {
   loginForm: FormGroup;
   isLoading: boolean = false;
   showError: boolean = false;
+  currentYear: number = new Date().getFullYear();
+  passwordVisible = false;
 
   constructor(private _fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.loginForm = _fb.group({
+      tenant: [''],
       email: ['', Validators.required],
-      password: ['', Validators.required]
+      password: ['', Validators.required],
+      remember: [false]
     });
   }
 
@@ -30,7 +34,8 @@ export class LoginComponent {
 
     this.isLoading = true;
     this.showError = false;
-    this.authService.login(this.loginForm.value)
+    const { email, password } = this.loginForm.getRawValue();
+    this.authService.login({ email, password })
       .pipe(
         finalize(() => this.isLoading = false)
       )
@@ -38,5 +43,9 @@ export class LoginComponent {
         next: _ => { this.router.navigate(['/dashboard']); },
         error: _ => { this.showError = true; }
       })
+  }
+
+  togglePasswordVisibility(): void {
+    this.passwordVisible = !this.passwordVisible;
   }
 }

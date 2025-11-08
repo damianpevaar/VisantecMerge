@@ -1,0 +1,318 @@
+<section class="visitor-registrations" *ngIf="!loadingRegistrations || registrations?.length; else loadingState">
+  <aside class="form-card">
+    <header class="form-header">
+      <h2>Registro de Visitantes</h2>
+      <span *ngIf="editingId" class="badge">Editando registro</span>
+    </header>
+
+    <form class="registration-form" [formGroup]="registrationForm" (ngSubmit)="submitRegistration()">
+      <mat-form-field appearance="outline">
+        <mat-label>Tipo de documento</mat-label>
+        <mat-select formControlName="documentType" panelClass="visitor-select-panel">
+          <mat-option *ngFor="let option of documentTypeOptions" [value]="option">
+            {{ documentTypeLabels[option] }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="registrationForm.controls.documentType.hasError('required')">
+          Selecciona un tipo de documento.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>N&uacute;mero de documento</mat-label>
+        <input
+          matInput
+          formControlName="documentNumber"
+          autocomplete="off"
+          inputmode="numeric"
+          pattern="\d*"
+          maxlength="20"
+          (input)="handleNumericInput('documentNumber', $event)">
+        <mat-error *ngIf="registrationForm.controls.documentNumber.hasError('required')">
+          El número es obligatorio.
+        </mat-error>
+        <mat-error *ngIf="registrationForm.controls.documentNumber.hasError('minlength')">
+          Debe contener al menos 4 dígitos.
+        </mat-error>
+        <mat-error *ngIf="registrationForm.controls.documentNumber.hasError('pattern')">
+          Solo se permiten números.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Nombres completos</mat-label>
+        <input
+          matInput
+          formControlName="fullName"
+          autocomplete="off"
+          (input)="handleNameInput($event)">
+        <mat-error *ngIf="registrationForm.controls.fullName.hasError('required')">
+          El nombre es obligatorio.
+        </mat-error>
+        <mat-error *ngIf="registrationForm.controls.fullName.hasError('minlength')">
+          Debe tener mínimo 3 caracteres.
+        </mat-error>
+        <mat-error *ngIf="registrationForm.controls.fullName.hasError('pattern')">
+          Solo se permiten letras y espacios.
+        </mat-error>
+      </mat-form-field>
+
+      <div class="entry-mode">
+        <span>Modo de ingreso</span>
+        <div class="options">
+          <mat-checkbox *ngFor="let mode of entryModeOptions"
+                        [checked]="entryModeChecked(mode)"
+                        (change)="setEntryMode(mode)">
+            {{ entryModeLabels[mode] }}
+          </mat-checkbox>
+        </div>
+      </div>
+
+      <div class="field-pair">
+        <mat-form-field appearance="outline">
+          <mat-label>Celular</mat-label>
+          <input
+            matInput
+            formControlName="phoneNumber"
+            autocomplete="off"
+            inputmode="numeric"
+            pattern="\d*"
+            maxlength="15"
+            (input)="handleNumericInput('phoneNumber', $event)">
+          <mat-error *ngIf="registrationForm.controls.phoneNumber.hasError('pattern')">
+            Solo se permiten números.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label class="label-with-help">          
+            <span
+              class="info-icon material-symbols-rounded"
+              matTooltip="opcional."
+              matTooltipPosition="above"
+              aria-label="Informaci&oacute;n sobre el correo">
+              info
+            </span>
+            Email (opcional)
+          </mat-label>
+          <input matInput formControlName="email" autocomplete="off">
+          <mat-error *ngIf="registrationForm.controls.email.hasError('email')">
+            Formato de correo inválido.
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline">
+        <mat-label class="label-with-help">
+          Cliente / Usuario o correo           
+        </mat-label>
+        <mat-select formControlName="company" panelClass="visitor-select-panel">
+          <mat-option [value]="null">Seleccione</mat-option>
+          <mat-option *ngIf="registrationForm.value.company && !companyExists(registrationForm.value.company)" [value]="registrationForm.value.company">
+            {{ registrationForm.value.company }}
+          </mat-option>
+          <mat-option *ngFor="let org of organizations" [value]="org.name">
+            <div class="option-primary">{{ org.name }}</div>
+            <small *ngIf="org.contactEmail">{{ org.contactEmail }}</small>
+          </mat-option>
+        </mat-select>
+        <!-- <mat-hint>Busca por nombre o ingresa nuevo correo.</mat-hint> -->
+      </mat-form-field>
+
+      <div class="field-pair">
+        <mat-form-field appearance="outline">
+          <mat-label>Horario</mat-label>
+          <mat-select formControlName="timeSlot" panelClass="visitor-select-panel">
+            <mat-option [value]="null">Seleccione</mat-option>
+            <mat-option *ngFor="let slot of timeSlotOptions" [value]="slot">
+              {{ timeSlotLabels[slot] }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="registrationForm.controls.timeSlot.hasError('required')">
+            Selecciona un horario.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>A quien visita</mat-label>
+          <input matInput formControlName="hostName" autocomplete="off">
+        </mat-form-field>
+      </div>
+
+      <div class="date-section">
+        <div class="date-section__title">Fecha de Autorizaci&oacute;n de la Visita</div>
+        <div class="field-pair">
+          <mat-form-field appearance="outline">
+            <mat-label class="label-with-help">
+              Fecha inicial
+            <span
+              class="info-icon material-symbols-rounded"
+              matTooltip="Solo se permiten fechas desde el d&iacute;a actual hacia adelante."
+              matTooltipPosition="above"
+              aria-label="Restricci&oacute;n de fecha inicial">
+              info
+            </span>
+            </mat-label>
+            <input matInput type="datetime-local" formControlName="visitStart" [min]="minVisitStart">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha final</mat-label>
+            <input matInput type="datetime-local" formControlName="visitEnd" [min]="minVisitEnd">
+            <mat-error *ngIf="visitRangeInvalid && registrationForm.get('visitEnd')?.touched">
+              La fecha final debe ser mayor o igual a la inicial.
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <mat-form-field appearance="outline">
+        <mat-label class="label-with-help">
+          Placa
+            <span
+              class="info-icon material-symbols-rounded"
+              matTooltip="Se limpia autom&aacute;ticamente para dejar solo letras y n&uacute;meros en may&uacute;scula."
+              matTooltipPosition="above"
+              aria-label="Descripci&oacute;n sobre placa">
+              info
+            </span>
+        </mat-label>
+        <input
+          matInput
+          formControlName="licensePlate"
+          autocomplete="off"
+          maxlength="10"
+          (input)="handleLicensePlateInput($event)">
+        <mat-error *ngIf="registrationForm.controls.licensePlate.hasError('pattern')">
+          Solo letras y números, sin espacios ni caracteres especiales.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Notas</mat-label>
+        <textarea matInput rows="3" formControlName="notes"></textarea>
+      </mat-form-field>
+
+      <footer class="form-actions">
+        <button type="button" mat-stroked-button color="primary" (click)="cancelEdit()" *ngIf="editingId">
+          Cancelar
+        </button>
+
+        <button type="submit" mat-flat-button color="primary" [disabled]="registrationForm.invalid || saving">
+          {{ editingId ? 'Actualizar' : 'Guardar' }}
+        </button>
+      </footer>
+    </form>
+  </aside>
+
+  <main class="list-area">
+    <section class="filters-card">
+      <form class="filters-form" [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+        <div class="field-group">
+          <mat-form-field appearance="outline">
+            <mat-label>Desde</mat-label>
+            <input matInput [matDatepicker]="fromPicker" formControlName="from" placeholder="Selecciona fecha">
+            <mat-datepicker-toggle matIconSuffix [for]="fromPicker"></mat-datepicker-toggle>
+            <mat-datepicker #fromPicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Hasta</mat-label>
+            <input matInput [matDatepicker]="toPicker" formControlName="to" placeholder="Selecciona fecha">
+            <mat-datepicker-toggle matIconSuffix [for]="toPicker"></mat-datepicker-toggle>
+            <mat-datepicker #toPicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <div class="field-group">
+          <mat-form-field appearance="outline">
+            <mat-label>Buscar por</mat-label>
+            <mat-select formControlName="searchBy">
+              <mat-option *ngFor="let option of searchOptions" [value]="option.value">
+                {{ option.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>Ingrese valor...</mat-label>
+            <input matInput formControlName="searchTerm" autocomplete="off">
+          </mat-form-field>
+        </div>
+
+        <div class="filter-actions">
+          <button mat-stroked-button type="button" (click)="clearFilters()">Limpiar</button>
+          <button mat-flat-button color="primary" type="submit">Buscar</button>
+          <button mat-stroked-button type="button" (click)="exportToExcel()">Exportar Excel</button>
+          <button mat-stroked-button color="accent" type="button" (click)="exportToPdf()">Exportar PDF</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="table-card">
+      <header class="table-header">
+        <h2>Historial de visitas registradas</h2>
+        <span class="total">Total: {{ totalRegistrations }}</span>
+      </header>
+
+      <div class="table-wrapper" *ngIf="registrations.length; else emptyList">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Nombres</th>
+              <th>Modo de ingreso</th>
+              <th>A quien visita</th>
+              <th>Fecha inicial</th>
+              <th>Fecha final</th>
+              <th>Placa</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let registration of registrations; trackBy: trackByRegistrationId">
+              <td>{{ registration.created | date:'short' }}</td>
+              <td>
+                <div class="cell-primary">{{ registration.fullName }}</div>
+                <small>Doc: {{ documentTypeChip(registration.documentType) }} {{ registration.documentNumber }}</small>
+              </td>
+              <td>{{ entryModeChip(registration.entryMode) }}</td>
+              <td>{{ registration.hostName || 'Sin asignar' }}</td>
+              <td>{{ registration.visitStart ? (registration.visitStart | date:'short') : 'Sin definir' }}</td>
+              <td>{{ registration.visitEnd ? (registration.visitEnd | date:'short') : 'Sin definir' }}</td>
+              <td>{{ registration.licensePlate || 'N/A' }}</td>
+              <td>
+                @let timeline = getTimelineStatus(registration);
+                <span class="status-badge" [ngClass]="timeline.cssClass">
+                  {{ timeline.label }}
+                </span>
+              </td>
+              <td class="actions">
+                <button mat-icon-button type="button" (click)="editRegistration(registration)">
+                  <span class="material-symbols-rounded">edit</span>
+                </button>
+                <button mat-icon-button color="warn" type="button" (click)="deleteRegistration(registration)">
+                  <span class="material-symbols-rounded">delete</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</section>
+
+<ng-template #loadingState>
+  <div class="loading-state">
+    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    <p>Cargando registros...</p>
+  </div>
+</ng-template>
+
+<ng-template #emptyList>
+  <div class="empty-list">
+    <p>No hay registros aún</p>
+  </div>
+</ng-template>

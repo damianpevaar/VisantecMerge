@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { ILoginRequest } from '../application/ilogin-request';
 import { ILoginResponse } from '../application/ilogin-response';
 import { IUser } from '../domain/iuser';
+import { ChangePasswordRequest } from '../application/change-password-request';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +25,10 @@ export class AuthService {
   login(credentials: ILoginRequest) {
     return this._httpClient.post<ILoginResponse>(`${this.apiUrl}/Users/login`, credentials)
       .pipe(tap(res => this.storeTokens(res)));
+  }
+
+  changePassword(payload: ChangePasswordRequest) {
+    return this._httpClient.post<void>(`${this.apiUrl}/UserManagement/ChangePassword`, payload);
   }
 
   refreshToken(): Observable<ILoginResponse> {

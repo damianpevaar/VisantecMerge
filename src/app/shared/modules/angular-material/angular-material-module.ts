@@ -10,7 +10,10 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatOptionModule } from '@angular/material/core';
+<<<<<<< HEAD
+=======
 import { MatListModule } from '@angular/material/list';
+>>>>>>> develop
 import { MatDividerModule } from '@angular/material/divider';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -34,7 +37,10 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatSortModule,
     MatAutocompleteModule,
     MatOptionModule,
+<<<<<<< HEAD
+=======
   MatListModule,
+>>>>>>> develop
     MatDividerModule,
     MatDialogModule,
     MatDatepickerModule,
@@ -55,7 +61,10 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatSortModule,
     MatAutocompleteModule,
     MatOptionModule,
+<<<<<<< HEAD
+=======
   MatListModule,
+>>>>>>> develop
     MatDividerModule,
     MatDialogModule,
     MatDatepickerModule,

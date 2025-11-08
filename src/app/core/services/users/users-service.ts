@@ -3,6 +3,7 @@ import { Apollo } from 'apollo-angular';
 import { HttpClient } from '@angular/common/http';
 import { USERS_QUERY, GetUsersVariables } from '../../graphQL/user-queries';
 import { IGetUsersResponse } from '../../domain/users/iget-users-response';
+import { map } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
 @Injectable({

@@ -27,6 +27,7 @@ export interface ClientRoleResponse {
 
 @Injectable({ providedIn: 'root' })
 export class ClientRolesService {
+  // baseUrl points to the controller root for ClientRoles endpoints
   private readonly baseUrl = `${environment.ApiUrl}/ClientRoles`;
 
   constructor(private readonly http: HttpClient) {}

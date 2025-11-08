@@ -182,7 +182,6 @@ export class RolesComponent implements OnInit, OnDestroy {
       this.form.markAllAsTouched();
       return;
     }
-
     const values = this.form.value;
     const selectedClients: string[] = values.clients || [];
 

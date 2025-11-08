@@ -22,15 +22,15 @@
 }
 
 app-login-component {
-    width: 60%;
+    width: 100%;
 }
 
-@media(max-width: 800px) {
-    .main-container {
-        grid-template-columns: 1fr;
-    }
+// @media(max-width: 800px) {
+//     .main-container {
+//         grid-template-columns: 1fr;
+//     }
 
-    .login-bg {
-        display: none;
-    }
-}
+//     .login-bg {
+//         display: none;
+//     }
+// }

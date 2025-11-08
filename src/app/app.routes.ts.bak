@@ -8,8 +8,6 @@ import { ReportsComponent } from './features/reports/reports.component';
 import { MailboxesComponent } from './features/mailboxes/mailboxes.component';
 import { OrganizationsComponent } from './features/organizations/organizations.component';
 import { VisitorRegistrationsComponent } from './features/visitor-registrations/visitor-registrations.component';
-import { UsersComponent } from './features/users/users.component';
-import { RolesComponent } from './features/roles/roles.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'dashboard/home', pathMatch: 'full' },
@@ -25,9 +23,7 @@ export const routes: Routes = [
             { path: 'mailboxes', component: MailboxesComponent, canActivate: [authGuard] },
             { path: 'organizations', component: OrganizationsComponent, canActivate: [authGuard] },
             { path: 'visitor-registrations', component: VisitorRegistrationsComponent, canActivate: [authGuard] },
-  			{ path: 'users', component: UsersComponent, canActivate: [authGuard] },
-            { path: 'roles', component: RolesComponent, canActivate: [authGuard] },
-            { path: '', redirectTo: 'visitor-registrations', pathMatch: 'full' }
+            { path: '', redirectTo: 'home', pathMatch: 'full' }
         ]
     }
 ];

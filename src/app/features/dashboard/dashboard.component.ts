@@ -72,7 +72,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     console.error('Error loading overdue tickets:', err);
                 }
             });
-    } 
+    }
 
     ngOnDestroy(): void {
         this.destroy$.next();

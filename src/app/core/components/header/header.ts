@@ -5,6 +5,8 @@ import { AngularMaterialModule } from '../../../shared/modules/angular-material/
 import { SidebarToggleService } from '../../services/sidebar-toggle-service';
 import { AuthService } from '../../services/auth-service';
 import { IUser } from '../../domain/iuser';
+import { MatDialog } from '@angular/material/dialog';
+import { ChangePasswordDialogComponent } from '../change-password-dialog/change-password-dialog.component';
 
 @Component({
   selector: 'app-header',
@@ -19,7 +21,8 @@ export class Header implements OnInit, OnDestroy {
 
   constructor(
     public readonly sidebarToggle: SidebarToggleService,
-    private readonly _authService: AuthService
+    private readonly _authService: AuthService,
+    private readonly dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -50,5 +53,12 @@ export class Header implements OnInit, OnDestroy {
   logout(): void {
     this.closeUserMenu();
     this._authService.logout();
+  }
+
+  openChangePasswordDialog(): void {
+    this.closeUserMenu();
+    this.dialog.open(ChangePasswordDialogComponent, {
+      width: '420px'
+    });
   }
 }

@@ -4,7 +4,7 @@
       <span class="material-symbols-rounded">menu</span>
     </button>
     <img class="logo" src="resources/logo_pevaar_strip.png" alt="">
-    <div class="workspace-name">Gestor de tickets de facturacion</div>
+    <div class="workspace-name">VisitanTec</div>
   </div>
 
   <div class="right-content">
@@ -40,7 +40,11 @@
         </div>
 
         <div class="user-menu-actions">
-          <button mat-menu-item (click)="logout()" class="logout-button">
+          <button mat-menu-item class="user-menu-action" (click)="openChangePasswordDialog()">
+            <mat-icon>lock_reset</mat-icon>
+            <span>Cambiar contraseña</span>
+          </button>
+          <button mat-menu-item class="user-menu-action logout-button" (click)="logout()">
             <mat-icon>logout</mat-icon>
             <span>Cerrar sesion</span>
           </button>

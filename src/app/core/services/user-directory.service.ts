@@ -12,12 +12,10 @@ interface UsersResponse {
     };
 }
 
-
 @Injectable({ providedIn: 'root' })
 export class UserDirectoryService {
 
     constructor(private readonly _apollo: Apollo) { }
-    
 
     searchUsers(term: string = '', first: number = 25): Observable<IUser[]> {
         const where: any = {};
