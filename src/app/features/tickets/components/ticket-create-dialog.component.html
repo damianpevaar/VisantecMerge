@@ -1,0 +1,74 @@
+<h2 mat-dialog-title>Crear ticket</h2>
+<form [formGroup]="form" (ngSubmit)="save()" class="dialog-body" mat-dialog-content>
+  <mat-form-field appearance="outline">
+    <mat-label>Asunto</mat-label>
+    <input matInput formControlName="subject" maxlength="120">
+    <mat-error *ngIf="form.controls.subject.invalid">Ingresa un asunto v�lido.</mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full">
+    <mat-label>Descripción</mat-label>
+    <textarea matInput rows="4" formControlName="description"></textarea>
+    <mat-error *ngIf="form.controls.description.invalid">Describe el caso recibido.</mat-error>
+  </mat-form-field>
+
+  <div class="grid">
+    <mat-form-field appearance="outline">
+      <mat-label>Prioridad</mat-label>
+      <mat-select formControlName="priority">
+        <mat-option *ngFor="let option of priorities" [value]="option">
+          {{ priorityLabels[option] }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Cliente</mat-label>
+      <mat-select formControlName="clientOrganizationId">
+        <mat-option [value]="null">Sin asociaci�n</mat-option>
+        <mat-option *ngFor="let org of data.organizations" [value]="org.id">
+          {{ org.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="grid">
+    <mat-form-field appearance="outline">
+      <mat-label>Correo del solicitante</mat-label>
+      <input matInput formControlName="requestedByEmail">
+      <mat-error *ngIf="form.controls.requestedByEmail.invalid">Ingresa un correo v�lido.</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Nombre del solicitante</mat-label>
+      <input matInput formControlName="requestedByName">
+    </mat-form-field>
+  </div>
+
+  <section class="attachments">
+    <label class="upload" [class.disabled]="isUploading">
+      <input type="file" multiple (change)="handleFileChange($event)" [disabled]="isUploading">
+      <span class="material-symbols-rounded">attach_file_add</span>
+      Adjuntar archivos
+    </label>
+    <span *ngIf="isUploading" class="uploading">Procesando archivos�</span>
+  </section>
+
+  <ul class="attachment-list" *ngIf="attachments.length">
+    <li *ngFor="let file of attachments; let i = index">
+      <span class="material-symbols-rounded">description</span>
+      <span class="name">{{ file.fileName }}</span>
+      <button mat-icon-button type="button" (click)="removeAttachment(i)">
+        <span class="material-symbols-rounded">close</span>
+      </button>
+    </li>
+  </ul>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="cancel()">Cancelar</button>
+    <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || isUploading">
+      Crear ticket
+    </button>
+  </mat-dialog-actions>
+</form>

@@ -1,0 +1,250 @@
+<div class="login-page">
+  @if (isLoading) {
+    <div class="loading-state">
+      <mat-spinner></mat-spinner>
+    </div>
+  }
+  @else {
+    <div class="layout">
+      <header class="login-header">
+        <div class="header-content">
+          <div class="brand">
+            <div class="brand-icon">VT</div>
+            <div class="brand-copy">
+              <h1>VisitanTec</h1>
+              <p>Plataforma de control de visitantes</p>
+            </div>
+          </div>
+
+          <nav class="header-nav">
+            <a class="nav-link" href="#caracteristicas">Caracter&iacute;sticas</a>
+            <a class="nav-link" href="#seguridad">Seguridad</a>
+            <a class="nav-link" href="#precios">Precios</a>
+            <a class="nav-link" href="#contacto">Contacto</a>
+          </nav>
+
+          <div class="language-switch">
+            <select id="idioma">
+              <option value="es">ES</option>
+              <option value="en">EN</option>
+            </select>
+            <button type="button" class="theme-toggle">Modo</button>
+          </div>
+        </div>
+      </header>
+
+      <main class="page-main">
+        <section class="hero-section">
+          <div class="hero-copy">
+            <span class="hero-badge">
+              <span class="badge-dot"></span>
+              Nuevo: Pre-registro por WhatsApp
+            </span>
+            <h2 class="hero-title">
+              Controla ingresos y salidas <span>en tiempo real</span>
+            </h2>
+            <p class="hero-text">
+              Registra visitantes, veh&iacute;culos y entregas desde cualquier dispositivo. Integraci&oacute;n con lectores de c&eacute;dula, QR y LPR para placas.
+            </p>
+            <ul class="hero-list">
+              <li>Multi-sede y multi-empresa</li>
+              <li>Auditor&iacute;a y trazabilidad</li>
+              <li>Reportes y exportaciones</li>
+              <li>Cumplimiento Habeas Data</li>
+            </ul>
+            <div class="hero-actions">
+              <a href="#login" class="hero-button primary">Ingresar ahora</a>
+              <a href="#contacto" class="hero-button secondary">Solicitar demo</a>
+            </div>
+          </div>
+
+          <div id="login" class="login-panel">
+            <div class="login-card">
+              <div class="card-header">
+                <div>
+                  <h3>Ingresar a VisitanTec</h3>
+                  <p>Bienvenido(a). Autent&iacute;cate para continuar.</p>
+                </div>
+                <span class="badge">v1.0</span>
+              </div>
+
+              <form
+                id="formLogin"
+                class="login-form"
+                [formGroup]="loginForm"
+                (ngSubmit)="login()"
+                novalidate>
+
+                <!-- <label class="form-field">
+                  <span>Empresa / Sede</span>
+                  <input
+                    id="tenant"
+                    formControlName="tenant"
+                    autocomplete="organization"
+                    placeholder="Parque Empresarial Norte" />
+                </label> -->
+
+                <label class="form-field">
+                  <span>Correo electr&oacute;nico</span>
+                  <input
+                    id="email"
+                    type="email"
+                    formControlName="email"
+                    autocomplete="email"
+                    required
+                    placeholder="usuario@empresa.com" />
+                </label>
+
+                <label class="form-field">
+                  <span>Contrase&ntilde;a</span>
+                  <div class="password-wrapper">
+                    <input
+                      id="password"
+                      [type]="passwordVisible ? 'text' : 'password'"
+                      formControlName="password"
+                      autocomplete="current-password"
+                      required
+                      placeholder="********" />
+                    <button
+                      type="button"
+                      id="togglePass"
+                      class="password-toggle"
+                      (click)="togglePasswordVisibility()">
+                      {{ passwordVisible ? 'ocultar' : 'ver' }}
+                    </button>
+                  </div>
+                </label>
+
+                <div class="form-helpers">
+                  <label class="remember">
+                    <input
+                      id="remember"
+                      type="checkbox"
+                      formControlName="remember" />
+                    Recu&eacute;rdame
+                  </label>
+                  <a href="#" class="helper-link">&iquest;Olvidaste tu contrase&ntilde;a?</a>
+                </div>
+
+                @if (showError) {
+                  <p class="error-banner">Ha ocurrido un error, intente nuevamente.</p>
+                }
+
+                <button
+                  type="submit"
+                  class="submit-button"
+                  [disabled]="!loginForm.valid || isLoading">
+                  Ingresar
+                </button>
+
+                <div class="divider">
+                  <span></span>
+                  <p>o</p>
+                  <span></span>
+                </div>
+
+                <!-- <div class="social-grid">
+                  <button type="button" id="btnGoogle" class="social-button">Continuar con Google</button>
+                  <button type="button" id="btnMicrosoft" class="social-button">Continuar con Microsoft</button>
+                </div> -->
+
+                <p class="legal-text">
+                  Al continuar aceptas nuestros <a href="#">T&eacute;rminos</a> y <a href="#">Pol&iacute;tica de datos</a>.
+                </p>
+              </form>
+            </div>
+
+            <div class="login-links">
+              &iquest;No tienes cuenta?
+              <a href="#contacto">Solicita acceso</a>
+              <span>&middot;</span>
+              <a href="#preregistro">Acceder como visitante (pre-registro)</a>
+            </div>
+          </div>
+        </section>
+
+        <section id="caracteristicas" class="feature-section">
+          <div class="feature-grid">
+            <article class="feature-card">
+              <h4>Registro r&aacute;pido</h4>
+              <p>Escanea documento, captura firma y toma de foto en segundos. M&uacute;ltiples modos de ingreso: peatonal, vehicular, moto, bicicleta.</p>
+            </article>
+            <article class="feature-card">
+              <h4>Reportes</h4>
+              <p>Filtros por fechas, exportaci&oacute;n a Excel/PDF y panel con KPIs para tus auditor&iacute;as.</p>
+            </article>
+            <article class="feature-card">
+              <h4>Integraciones</h4>
+              <p>Conecta torniquetes, c&aacute;maras LPR, lectores QR y sistemas de n&oacute;mina o visitas.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="seguridad" class="security-section">
+          <div class="security-grid">
+            <div class="security-copy">
+              <h4>Seguridad y cumplimiento</h4>
+              <ul>
+                <li>Encriptaci&oacute;n de contrase&ntilde;as (BCrypt) y 2FA opcional</li>
+                <li>Roles y permisos por m&oacute;dulo y sede</li>
+                <li>Logs de auditor&iacute;a y retenci&oacute;n configurable</li>
+                <li>Cumplimiento Ley 1581 de 2012 (Habeas Data)</li>
+              </ul>
+            </div>
+            <div class="glass-card">
+              <p class="tip-title">Consejo</p>
+              <p class="tip-text">Activa el doble factor de autenticaci&oacute;n desde tu perfil para blindar accesos.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="precios" class="pricing-section">
+          <div class="pricing-grid">
+            <article class="pricing-card">
+              <h5>B&aacute;sico</h5>
+              <p class="price">
+                $149.000 <span>/ mes</span>
+              </p>
+              <ul>
+                <li>1 sede, 2 puestos</li>
+                <li>Reportes esenciales</li>
+                <li>Soporte por email</li>
+              </ul>
+              <button type="button" class="tertiary-button">Elegir</button>
+            </article>
+
+            <article class="pricing-card recommended">
+              <span class="badge">Recomendado</span>
+              <h5>Pro</h5>
+              <p class="price">
+                $349.000 <span>/ mes</span>
+              </p>
+              <ul>
+                <li>3 sedes, 6 puestos</li>
+                <li>Exportaciones y APIs</li>
+                <li>Soporte prioritario</li>
+              </ul>
+              <button type="button" class="primary-button">Elegir</button>
+            </article>
+
+            <article class="pricing-card">
+              <h5>Enterprise</h5>
+              <p class="price">A medida</p>
+              <ul>
+                <li>Sedes ilimitadas</li>
+                <li>Integraciones avanzadas</li>
+                <li>SLA dedicado</li>
+              </ul>
+              <button type="button" class="tertiary-button">Hablar con ventas</button>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <footer id="contacto" class="login-footer">
+        <p>&copy; {{ currentYear }} VisitanTec &middot; Plataforma de control de visitantes</p>
+        <p>Soporte: soporte@visitantec.app &middot; +57 300 000 0000</p>
+      </footer>
+    </div>
+  }
+</div>

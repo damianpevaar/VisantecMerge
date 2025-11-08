@@ -1,0 +1,226 @@
+@use '@angular/material' as mat;
+
+// Customize the entire app. Change :root to your selector if you want to scope the styles.
+:host {
+  @include mat.icon-button-overrides((
+    icon-color: var(--app-font-primary-color)
+  ));
+}
+
+header {
+    background-color: var(--app-primary-color);
+    color: var(--app-font-primary-color);
+    height: 40px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .left-content {
+        height: 100%;
+        display: flex;
+        justify-content: start;
+        align-items: center;
+        gap: 20px;
+
+        .logo {
+            height: 100%;
+        }
+    }
+
+    .right-content {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+
+        .user-menu-container {
+            position: relative;
+
+            .user-menu-backdrop {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                z-index: 999;
+                background: transparent;
+            }
+
+            .user-menu-button {
+                color: var(--app-font-primary-color);
+                transition: all 0.3s ease;
+
+                &:hover,
+                &.active {
+                    background-color: rgba(255, 255, 255, 0.1);
+                    transform: scale(1.05);
+                }
+
+                mat-icon {
+                    font-size: 28px;
+                    width: 28px;
+                    height: 28px;
+                }
+            }
+
+            .user-menu {
+                position: absolute;
+                top: calc(100% + 10px);
+                right: 0;
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+                min-width: 280px;
+                z-index: 1000;
+                border: 1px solid rgba(0, 0, 0, 0.1);
+                animation: slideDown 0.2s ease-out;
+
+                @keyframes slideDown {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-10px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                .user-menu-header {
+                    padding: 16px;
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+
+                    .user-avatar {
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 50%;
+                        background-color: var(--app-primary-color);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: white;
+                        flex-shrink: 0;
+
+                        mat-icon {
+                            font-size: 24px;
+                        }
+                    }
+
+                    .user-info {
+                        flex: 1;
+                        min-width: 0;
+
+                        .user-name {
+                            font-size: 16px;
+                            font-weight: 500;
+                            color: #333;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            white-space: nowrap;
+                        }
+
+                        .user-email {
+                            font-size: 14px;
+                            color: #666;
+                            margin-top: 2px;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            white-space: nowrap;
+                        }
+                    }
+                }
+
+                .user-roles {
+                    padding: 16px;
+
+                    .roles-header {
+                        font-size: 14px;
+                        font-weight: 500;
+                        color: #333;
+                        margin-bottom: 8px;
+                    }
+
+                    .roles-list {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 6px;
+
+                        .role-item {
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                            padding: 4px 0;
+
+                            mat-icon {
+                                font-size: 16px;
+                                width: 16px;
+                                height: 16px;
+                                color: var(--app-primary-color);
+                            }
+
+                            span {
+                                font-size: 14px;
+                                color: #555;
+                                text-transform: capitalize;
+                            }
+                        }
+                    }
+                }
+
+                .user-menu-actions {
+                    padding: 8px 0;
+
+                    .user-menu-action {
+                        width: 100%;
+                        color: #1f2937;
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                        padding: 12px 16px;
+                        font-size: 14px;
+                        border: none;
+                        background: none;
+                        text-align: left;
+                        cursor: pointer;
+                        transition: background-color 0.3s ease;
+
+                        &:hover {
+                            background-color: rgba(37, 99, 235, 0.08);
+                        }
+
+                        mat-icon {
+                            font-size: 18px;
+                            width: 18px;
+                            height: 18px;
+                        }
+                    }
+
+                    .logout-button {
+                        color: #d32f2f;
+
+                        &:hover {
+                            background-color: rgba(211, 47, 47, 0.1);
+                        }
+                    }
+                }
+
+                mat-divider {
+                    margin: 0;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    header {
+        .right-content .user-menu-container .user-menu {
+            min-width: 260px;
+            right: -20px;
+        }
+    }
+}
+

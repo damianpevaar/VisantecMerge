@@ -1,0 +1,65 @@
+.main-content {
+    min-height: 100dvh;
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+        "header header"
+        "sidebar main"
+        "sidebar footer";
+    transition: 200ms;
+
+    &.nav-extended {
+        transition: 200ms;
+        grid-template-columns: 250px 1fr;
+    }
+}
+
+app-header {
+    z-index: 1;
+    top: 0;
+    position: sticky;
+    grid-area: header;
+}
+
+app-sidebar {
+    z-index: 1;
+    top: 80px;
+    position: sticky;
+    height: calc(100vh - 80px);
+
+    grid-area: sidebar;
+}
+
+.main {
+    grid-area: main;
+    padding: 20px;
+
+    overflow: auto;
+}
+
+.footer {
+    grid-area: footer;
+}
+
+@media(max-width: 800px) {
+    .main-content {
+        grid-template-columns: 0fr 1fr;
+
+        &.nav-extended {
+            grid-template-columns: 0fr 1fr;
+
+            app-sidebar {
+                transition: 200ms;
+                left: 0px;
+            }
+        }
+    }
+
+    app-sidebar {
+        position: fixed;
+        transition: 200ms;
+        left: -300px;
+        width: 300px;
+    }
+}

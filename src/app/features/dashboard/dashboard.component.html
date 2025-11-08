@@ -1,0 +1,65 @@
+<section class="dashboard">
+  <div class="metrics">
+    <article class="metric-card">
+      <h3>Total de tickets</h3>
+      <p class="metric-value">{{ summary.totalTickets | number }}</p>
+    </article>
+    <article class="metric-card warning">
+      <h3>Tickets en retraso (&gt;3 días)</h3>
+      <p class="metric-value">{{ summary.overdueTickets | number }}</p>
+    </article>
+    <article class="metric-card">
+      <h3>Estados activos</h3>
+      <ul>
+        <li *ngFor="let status of summary.ticketsByStatus">
+          <span>{{ statusLowLabel(status.key) }}</span>
+          <span class="badge">{{ status.value }}</span>
+        </li>
+      </ul>
+    </article>
+    <article class="metric-card">
+      <h3>Casos por origen</h3>
+      <ul>
+        <li *ngFor="let origin of summary.ticketsByOrigin">
+          <span>{{ originLabel(origin.key) }}</span>
+          <span class="badge">{{ origin.value }}</span>
+        </li>
+      </ul>
+    </article>
+  </div>
+
+  <section class="overdue">
+    <header>
+      <h2>Casos en seguimiento</h2>
+      <p *ngIf="loadingOverdue">Actualizando información...</p>
+      <p *ngIf="!loadingOverdue && !overdueTickets.length">
+        No hay tickets en retraso. ¡Buen trabajo!
+      </p>
+    </header>
+
+    <table *ngIf="overdueTickets.length" class="ticket-table">
+      <thead>
+        <tr>
+          <th>Número</th>
+          <th>Asunto</th>
+          <th>Cliente</th>
+          <th>Estado</th>
+          <th>Prioridad</th>
+          <th>Abierto</th>
+          <th>Vence</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let ticket of overdueTickets">
+          <td>{{ ticket.ticketNumber }}</td>
+          <td>{{ ticket.subject }}</td>
+          <td>{{ ticket.clientOrganization?.name ?? '?' }}</td>
+          <td>{{ statusLabel(ticket.status) }}</td>
+          <td>{{ priorityLabel(ticket.priority) }}</td>
+          <td>{{ ticket.openedAt | date:'shortDate' }}</td>
+          <td>{{ ticket.slaDueAt | date:'shortDate' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</section>

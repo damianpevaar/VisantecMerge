@@ -1,0 +1,33 @@
+import { Routes } from '@angular/router';
+import { DashboardLayout } from './core/layout/dashboard-layout/dashboard-layout';
+import { LoginLayout } from './core/layout/login-layout/login-layout';
+import { authGuard } from './core/guards/auth-guard';
+import { DashboardComponent } from './features/dashboard/dashboard.component';
+import { TicketsComponent } from './features/tickets/tickets.component';
+import { ReportsComponent } from './features/reports/reports.component';
+import { MailboxesComponent } from './features/mailboxes/mailboxes.component';
+import { OrganizationsComponent } from './features/organizations/organizations.component';
+import { VisitorRegistrationsComponent } from './features/visitor-registrations/visitor-registrations.component';
+import { UsersComponent } from './features/users/users.component';
+import { RolesComponent } from './features/roles/roles.component';
+
+export const routes: Routes = [
+    { path: '', redirectTo: 'dashboard/home', pathMatch: 'full' },
+    { path: 'login', component: LoginLayout },
+    {
+        path: 'dashboard',
+        component: DashboardLayout,
+        canActivate: [authGuard],
+        children: [
+            { path: 'home', component: DashboardComponent, canActivate: [authGuard] },
+            { path: 'tickets', component: TicketsComponent, canActivate: [authGuard] },
+            { path: 'reports', component: ReportsComponent, canActivate: [authGuard] },
+            { path: 'mailboxes', component: MailboxesComponent, canActivate: [authGuard] },
+            { path: 'organizations', component: OrganizationsComponent, canActivate: [authGuard] },
+            { path: 'visitor-registrations', component: VisitorRegistrationsComponent, canActivate: [authGuard] },
+  			{ path: 'users', component: UsersComponent, canActivate: [authGuard] },
+            { path: 'roles', component: RolesComponent, canActivate: [authGuard] },
+            { path: '', redirectTo: 'visitor-registrations', pathMatch: 'full' }
+        ]
+    }
+];

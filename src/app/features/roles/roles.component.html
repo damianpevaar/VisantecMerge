@@ -1,0 +1,104 @@
+<section class="roles" *ngIf="!loading; else loadingState">
+  <aside class="role-list">
+    <header>
+      <h2>Roles</h2>
+      <button mat-stroked-button color="primary" type="button" (click)="createRole()">Nuevo rol</button>
+    </header>
+
+    <div class="list">
+      <button
+        type="button"
+        *ngFor="let role of roles"
+        (click)="selectRole(role)"
+        [class.active]="role.id === selectedRole?.id">
+        <div class="name">{{ role.name }}</div>
+        <div class="meta"><span>Clientes asignados: {{ role.clients?.length || 0 }}</span></div>
+      </button>
+    </div>
+  </aside>
+
+  <section class="role-detail">
+    <header>
+      <h2>{{ selectedRole ? 'Actualizar rol' : 'Registrar rol' }}</h2>
+      <p *ngIf="selectedRole">ID: {{ selectedRole.id }}</p>
+    </header>
+
+  <form [formGroup]="form" class="detail-form">
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="half">
+        <mat-label>Nombre del rol</mat-label>
+        <input matInput formControlName="roleName" placeholder="Ej: Cliente-Viewer" />
+        <mat-error *ngIf="form.controls['roleName']?.invalid">
+          El nombre es obligatorio.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half">
+        <mat-label>Permisos de Rol</mat-label>
+        <mat-select formControlName="baseRole">
+          <mat-option *ngFor="let r of rolesList" [value]="r.id">{{ r.name }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.controls['baseRole']?.invalid">
+          Selecciona un rol base.
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+      <div class="clients-section">
+        <div class="clients-header">
+          <label class="clients-label">Clientes</label>
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Buscar cliente</mat-label>
+            <input matInput [formControl]="clientSearch" placeholder="Escribe para filtrar..." />
+            <button *ngIf="clientSearch.value" mat-icon-button matSuffix (click)="clientSearch.setValue('')">
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+
+        <div class="clients-grid">
+          <div class="clients-header-row">
+            <div class="col col-check"></div>
+            <div class="col col-name">Nombre</div>
+            <div class="col col-phone">Teléfono</div>
+            <div class="col col-email">Email</div>
+          </div>
+
+          <div class="client-card" *ngFor="let c of filteredClients">
+            <div class="col col-check">
+              <mat-checkbox [checked]="isClientSelected(c.id)" (change)="toggleClientSelection(c.id)">
+              </mat-checkbox>
+            </div>
+            <div class="col col-name">{{ c.name }}</div>
+            <div class="col col-phone">{{ c.contactPhone || '-' }}</div>
+            <div class="col col-email">{{ c.contactEmail || '-' }}</div>
+          </div>
+        </div>
+
+        <p *ngIf="!filteredClients.length" class="no-results">No se encontraron clientes.</p>
+      </div>
+
+      <div class="actions">
+        <button mat-flat-button color="primary" type="button" (click)="createRole()" [disabled]="form.invalid">
+          Guardar rol (simulado)
+        </button>
+        <button
+          mat-stroked-button
+          color="warn"
+          *ngIf="selectedRole"
+          type="button"
+          (click)="deleteRole(selectedRole)">
+          Eliminar (simulado)
+        </button>
+      </div>
+    </form>
+  </section>
+</section>
+
+<ng-template #loadingState>
+  <div class="loading">
+    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    <p>Cargando roles...</p>
+  </div>
+</ng-template>

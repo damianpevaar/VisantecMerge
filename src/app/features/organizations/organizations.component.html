@@ -1,0 +1,70 @@
+<section class="organizations" *ngIf="!loading; else loadingState">
+  <aside class="organization-list">
+    <header>
+      <h2>Clientes</h2>
+      <button mat-stroked-button color="primary" type="button" (click)="startCreate()">
+        Nuevo cliente
+      </button>
+    </header>
+
+    <div class="list">
+      <button type="button"
+              *ngFor="let organization of organizations"
+              (click)="selectOrganization(organization)"
+              [class.active]="organization.id === selectedOrganization?.id">
+        <div class="name">{{ organization.name }}</div>
+        <div class="meta">
+          <span>{{ organization.contactEmail || 'Sin correo' }}</span>
+          <span class="status" [class.inactive]="!organization.isActive">
+            {{ organization.isActive ? 'Activo' : 'Inactivo' }}
+          </span>
+        </div>
+      </button>
+    </div>
+  </aside>
+
+  <section class="organization-detail">
+    <header>
+      <h2>{{ selectedOrganization ? 'Actualizar cliente' : 'Registrar cliente' }}</h2>
+      <p *ngIf="selectedOrganization">ID: {{ selectedOrganization.id }}</p>
+    </header>
+
+    <form [formGroup]="form" (ngSubmit)="save()" class="detail-form">
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Nombre</mat-label>
+        <input matInput formControlName="name">
+        <mat-error *ngIf="form.controls.name.invalid">El nombre es obligatorio.</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>NIT / ID Tributario</mat-label>
+        <input matInput formControlName="taxId">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Correo de contacto</mat-label>
+        <input matInput formControlName="contactEmail">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Telefono</mat-label>
+        <input matInput formControlName="contactPhone">
+      </mat-form-field>
+
+      <mat-slide-toggle formControlName="isActive">Cliente activo</mat-slide-toggle>
+
+      <div class="actions">
+        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || saving">
+          Guardar cliente
+        </button>
+      </div>
+    </form>
+  </section>
+</section>
+
+<ng-template #loadingState>
+  <div class="loading">
+    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    <p>Cargando clientes…</p>
+  </div>
+</ng-template>
