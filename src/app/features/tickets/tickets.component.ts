@@ -282,6 +282,7 @@ export class TicketsComponent implements OnInit, OnDestroy {
                 }
             });
     }
+    
     private refreshTickets(): void {
         const query = this.ticketsQuery;
         if (!query) {
